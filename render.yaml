@@ -1,0 +1,47 @@
+# ============================================================
+# Blueprint de Render para el backend del Sistema de Reservas.
+# Importalo desde: Render Dashboard -> New -> Blueprint,
+# apuntando al repositorio que contenga este archivo.
+# ============================================================
+services:
+  - type: web
+    name: hotel-reservas-backend
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Render inyecta PORT automaticamente; la app ya lo respeta.
+      # DB_SSL no se define: la app detecta SSL automaticamente segun la URL
+      # (interna de Render = sin SSL, externa = con SSL).
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: DEFAULT_CURRENCY
+        value: usd
+      # CORS abierto: permite peticiones desde cualquier origen (incluido el frontend).
+      - key: CORS_ORIGIN
+        value: "*"
+      # Conexion a la base de datos PostgreSQL en Render.
+      # Definela manualmente en el dashboard del servicio (marcada como secreta):
+      # usa la "Internal Database URL" de tu base 'proyectoropa' si el backend
+      # esta en la misma cuenta/region, o la "External Database URL" en caso contrario.
+      - key: DATABASE_URL
+        sync: false
+      # SSL de la base: la app lo detecta por la URL, pero puedes forzarlo aqui.
+      # Internal URL de Render = false; External URL (termina en .render.com) = true.
+      - key: DB_SSL
+        sync: false
+      # Secreto JWT: se genera solo de forma segura en el primer deploy.
+      - key: JWT_SECRET
+        generateValue: true
+      # Claves de Stripe: definelas manualmente en el dashboard (marcadas como secretas).
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

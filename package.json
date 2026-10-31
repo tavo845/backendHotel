@@ -1,0 +1,39 @@
+{
+  "name": "hotel-reservas-backend",
+  "version": "1.0.0",
+  "description": "Backend para un Sistema de Reservas de Hotel (Node.js + Express + PostgreSQL/Render)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:migrate": "node src/database/migrate.js",
+    "db:migrate:public": "node src/database/migrate-public.js",
+    "db:seed": "node src/database/seed.js"
+  },
+  "keywords": [
+    "hotel",
+    "reservas",
+    "express",
+    "postgresql",
+    "node"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.12.0",
+    "stripe": "^16.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

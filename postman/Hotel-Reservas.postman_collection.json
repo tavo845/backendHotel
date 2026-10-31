@@ -1,0 +1,458 @@
+{
+  "info": {
+    "name": "Hotel Reservas API",
+    "description": "Coleccion completa del backend de Sistema de Reservas de Hotel (Node.js + Express + PostgreSQL/Render). El login guarda el token automaticamente en la variable {{token}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "token", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Recepcionista Uno\",\n  \"email\": \"recepcion@hotel.com\",\n  \"password\": \"secret123\",\n  \"rol\": \"recepcion\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (guarda token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  console.log('Token guardado');",
+                  "}",
+                  "pm.test('login ok', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hotel.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me (perfil)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clientes?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener cliente por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/clientes/1", "host": ["{{baseUrl}}"], "path": ["clientes", "1"] }
+          }
+        },
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/clientes", "host": ["{{baseUrl}}"], "path": ["clientes"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Pedro\",\n  \"apellido\": \"Martinez\",\n  \"documento\": \"DOC-100\",\n  \"email\": \"pedro@example.com\",\n  \"telefono\": \"555-9000\",\n  \"ciudad\": \"Guatemala\",\n  \"pais\": \"Guatemala\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/clientes/1", "host": ["{{baseUrl}}"], "path": ["clientes", "1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"telefono\": \"555-1234\"\n}" }
+          }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/clientes/1", "host": ["{{baseUrl}}"], "path": ["clientes", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empleados",
+      "item": [
+        {
+          "name": "Listar empleados",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/empleados", "host": ["{{baseUrl}}"], "path": ["empleados"] }
+          }
+        },
+        {
+          "name": "Crear empleado (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/empleados", "host": ["{{baseUrl}}"], "path": ["empleados"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Lucia\",\n  \"apellido\": \"Fernandez\",\n  \"documento\": \"EMP-100\",\n  \"cargo\": \"Camarera\",\n  \"email\": \"lucia@hotel.com\",\n  \"salario\": 4500\n}"
+            }
+          }
+        },
+        {
+          "name": "Actualizar empleado (admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/empleados/1", "host": ["{{baseUrl}}"], "path": ["empleados", "1"] },
+            "body": { "mode": "raw", "raw": "{\n  \"salario\": 6000\n}" }
+          }
+        },
+        {
+          "name": "Eliminar empleado (admin)",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/empleados/1", "host": ["{{baseUrl}}"], "path": ["empleados", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proveedores",
+      "item": [
+        {
+          "name": "Listar proveedores",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/proveedores", "host": ["{{baseUrl}}"], "path": ["proveedores"] }
+          }
+        },
+        {
+          "name": "Crear proveedor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/proveedores", "host": ["{{baseUrl}}"], "path": ["proveedores"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bebidas del Valle\",\n  \"nit\": \"NIT-100\",\n  \"contacto\": \"Sofia Ruiz\",\n  \"email\": \"ventas@bebidas.com\",\n  \"telefono\": \"555-7000\",\n  \"tipo_servicio\": \"bar\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Habitaciones",
+      "item": [
+        {
+          "name": "Listar habitaciones",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/habitaciones?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitaciones"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "estado", "value": "disponible", "disabled": true },
+                { "key": "tipo", "value": "suite", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Disponibilidad por fechas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/habitaciones/disponibilidad?fecha_entrada=2026-10-01&fecha_salida=2026-10-05",
+              "host": ["{{baseUrl}}"],
+              "path": ["habitaciones", "disponibilidad"],
+              "query": [
+                { "key": "fecha_entrada", "value": "2026-10-01" },
+                { "key": "fecha_salida", "value": "2026-10-05" },
+                { "key": "tipo", "value": "doble", "disabled": true },
+                { "key": "capacidad", "value": "2", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear habitacion (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/habitaciones", "host": ["{{baseUrl}}"], "path": ["habitaciones"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": \"301\",\n  \"tipo\": \"suite\",\n  \"capacidad\": 3,\n  \"precio_noche\": 1500,\n  \"descripcion\": \"Suite presidencial\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservas",
+      "item": [
+        {
+          "name": "Listar reservas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reservas?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["reservas"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "estado", "value": "pendiente", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear reserva",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('reservaId', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/reservas", "host": ["{{baseUrl}}"], "path": ["reservas"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente_id\": 1,\n  \"habitacion_id\": 2,\n  \"fecha_entrada\": \"2026-10-01\",\n  \"fecha_salida\": \"2026-10-05\",\n  \"num_huespedes\": 2,\n  \"notas\": \"Llegada tarde\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener reserva",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reservas/{{reservaId}}", "host": ["{{baseUrl}}"], "path": ["reservas", "{{reservaId}}"] }
+          }
+        },
+        {
+          "name": "Cambiar estado de reserva",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/reservas/{{reservaId}}/estado", "host": ["{{baseUrl}}"], "path": ["reservas", "{{reservaId}}", "estado"] },
+            "body": { "mode": "raw", "raw": "{\n  \"estado\": \"confirmada\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Servicios",
+      "item": [
+        {
+          "name": "Listar servicios",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] }
+          }
+        },
+        {
+          "name": "Crear servicio",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/servicios", "host": ["{{baseUrl}}"], "path": ["servicios"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Room service nocturno\",\n  \"categoria\": \"restaurante\",\n  \"precio\": 95\n}"
+            }
+          }
+        },
+        {
+          "name": "Agregar servicio a reserva",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/servicios/reserva/{{reservaId}}", "host": ["{{baseUrl}}"], "path": ["servicios", "reserva", "{{reservaId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"servicio_id\": 1,\n  \"cantidad\": 2\n}" }
+          }
+        },
+        {
+          "name": "Listar servicios de una reserva",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/servicios/reserva/{{reservaId}}", "host": ["{{baseUrl}}"], "path": ["servicios", "reserva", "{{reservaId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Facturas",
+      "item": [
+        {
+          "name": "Generar factura desde reserva",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.id) {",
+                  "  pm.collectionVariables.set('facturaId', res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/facturas/generar", "host": ["{{baseUrl}}"], "path": ["facturas", "generar"] },
+            "body": { "mode": "raw", "raw": "{\n  \"reserva_id\": {{reservaId}},\n  \"impuesto_porcentaje\": 12\n}" }
+          }
+        },
+        {
+          "name": "Listar facturas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/facturas", "host": ["{{baseUrl}}"], "path": ["facturas"] }
+          }
+        },
+        {
+          "name": "Obtener factura con detalle",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/facturas/{{facturaId}}", "host": ["{{baseUrl}}"], "path": ["facturas", "{{facturaId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "item": [
+        {
+          "name": "Pago manual (efectivo/tarjeta)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/pagos/manual", "host": ["{{baseUrl}}"], "path": ["pagos", "manual"] },
+            "body": { "mode": "raw", "raw": "{\n  \"factura_id\": {{facturaId}},\n  \"monto\": 2464,\n  \"metodo\": \"efectivo\"\n}" }
+          }
+        },
+        {
+          "name": "Crear intento de pago Stripe",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/pagos/stripe/intento", "host": ["{{baseUrl}}"], "path": ["pagos", "stripe", "intento"] },
+            "body": { "mode": "raw", "raw": "{\n  \"factura_id\": {{facturaId}}\n}" }
+          }
+        },
+        {
+          "name": "Listar pagos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/pagos", "host": ["{{baseUrl}}"], "path": ["pagos"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Resumen general",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/reportes/resumen", "host": ["{{baseUrl}}"], "path": ["reportes", "resumen"] }
+          }
+        },
+        {
+          "name": "Ocupacion por fecha",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reportes/ocupacion?desde=2026-10-01&hasta=2026-10-07",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "ocupacion"],
+              "query": [
+                { "key": "desde", "value": "2026-10-01" },
+                { "key": "hasta", "value": "2026-10-07" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Servicios mas solicitados",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/reportes/servicios-mas-solicitados?desde=2026-01-01&hasta=2026-12-31&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["reportes", "servicios-mas-solicitados"],
+              "query": [
+                { "key": "desde", "value": "2026-01-01" },
+                { "key": "hasta", "value": "2026-12-31" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
